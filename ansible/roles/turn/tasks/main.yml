@@ -1,0 +1,29 @@
+---
+- name: install turn packages
+  with_items: "{{ turn_packages }}"
+  package:
+    name: "{{ item.name }}"
+  notify:
+    - restart turn
+
+- name: configure turn
+  template:
+    src: turnserver.conf.j2
+    dest: /usr/local/etc/turnserver.conf
+  notify:
+    - restart turn
+
+- name: enable turn
+  template:
+    src: turnserver.j2
+    dest: /etc/rc.conf.d/turnserver
+  notify:
+    - restart turn
+
+- name: install turn service file
+  template:
+    src: turnserver.rc.j2
+    dest: /usr/local/etc/rc.d/turnserver
+    mode: 0755
+  notify:
+    - restart turn
